@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import pytest
-import fast_flow.dict_config as dict_config
+import fast_flow.v1.dict_config as dict_config
 import sys, os
 sys.path.append(os.path.dirname(__file__))
 from . import fake_scribbler_to_test as fakes
