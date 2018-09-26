@@ -1,0 +1,12 @@
+stages:
+    - random_generate: fflow_eg_mods.Generator
+    - mean_max_min: fflow_eg_mods.Summarize
+
+random_generate:
+    mean: 3
+    variance: 5
+    quantity: 10
+
+mean_max_min:
+    replace_values: True
+    methods: [mean, max, min]
