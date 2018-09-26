@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/FAST-HEP/FAST-Flow",
     packages=setuptools.find_packages(),
     install_requires=['six', 'pyyaml'],
-    setup_requires=["pytest-runner"],
+    #setup_requires=["pytest-runner"],
     tests_require=["pytest"],
     classifiers=(
         "Programming Language :: Python :: 2",

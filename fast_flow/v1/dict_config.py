@@ -16,6 +16,10 @@ class BadStagesDescription(BadConfig):
     pass
 
 
+class BadStageList(BadConfig):
+    pass
+
+
 def sequence_from_dict(stages, general={}, **stage_descriptions):
     output_dir = general.get("output_dir", os.getcwd())
     default_module = general.get("backend", None)
@@ -28,6 +32,10 @@ def sequence_from_dict(stages, general={}, **stage_descriptions):
 
 
 def _create_stages(stages, out_dir=".", default_module=None):
+    if not isinstance(stages, list):
+        msg = "Bad stage list: Should be a list"
+        logger.error(msg + ", but instead got a '{}'".format(type(stages)))
+        raise BadStageList(msg)
     return [_make_stage(i, out_dir, stage_cfg, default_module=default_module) for i, stage_cfg in enumerate(stages)]
 
 
@@ -74,7 +82,7 @@ def get_stage_class(class_name, default_module, raise_exception=True):
     if not default_module:
         default_module = sys.modules[__name__]
 
-    if not "." in class_name:
+    if "." not in class_name:
         module = default_module
     else:
         path = class_name.split(".")
