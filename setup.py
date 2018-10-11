@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="FAST-Flow",
+    name="fast-flow",
     version="0.0.1",
     author="Ben Krikler",
-    author_email="b.krikler@gmail.com",
+    author_email="fast-hep@cern.ch",
     description="YAML-based analysis flow description language",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/FAST-HEP/FAST-Flow",
+    url="https://gitlab.cern.ch/fast-hep/public/fast-flow",
     packages=setuptools.find_packages(),
     install_requires=['six', 'pyyaml'],
     #setup_requires=["pytest-runner"],
