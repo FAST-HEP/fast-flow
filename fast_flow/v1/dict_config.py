@@ -25,37 +25,39 @@ def sequence_from_dict(stages, general={}, **stage_descriptions):
     default_module = general.get("backend", None)
     if default_module:
         default_module = importlib.import_module(default_module)
-    stages = _create_stages(stages, output_dir, default_module=default_module)
-    stages = _configure_stages(stages, stage_descriptions)
+    stages = _create_stages(stages, default_module=default_module)
+    stages = _configure_stages(stages, output_dir, stage_descriptions)
 
     return stages
 
 
-def _create_stages(stages, out_dir=".", default_module=None):
+def _create_stages(stages, default_module=None):
     if not isinstance(stages, list):
         msg = "Bad stage list: Should be a list"
         logger.error(msg + ", but instead got a '{}'".format(type(stages)))
         raise BadStageList(msg)
-    return [_make_stage(i, out_dir, stage_cfg, default_module=default_module) for i, stage_cfg in enumerate(stages)]
+    return [_make_stage(i, stage_cfg, default_module=default_module) for i, stage_cfg in enumerate(stages)]
 
 
-def _configure_stages(stages, stage_descriptions):
+def _configure_stages(stages, output_dir, stage_descriptions):
     out_stages = []
     for name, stage_class in stages:
         cfg = stage_descriptions.get(name, None)
         if not cfg:
             raise BadStagesDescription("Missing description for stage '{}'".format(name))
         if isinstance(cfg, dict):
+            cfg.setdefault("name", name)
+            cfg.setdefault("out_dir", output_dir)
             stage = stage_class(**cfg)
         elif isinstance(cfg, list):
             stage = stage_class(*cfg)
         else:
-            stage = stage_class(cfg)
+            stage = stage_class(cfg, name=name)
         out_stages.append(stage)
     return out_stages
 
 
-def _make_stage(index, output_dir, stage_cfg, default_type="BinnedDataframe", default_module=None):
+def _make_stage(index, stage_cfg, default_type="BinnedDataframe", default_module=None):
     if isinstance(stage_cfg, dict):
         if len(stage_cfg) != 1:
             msg = "More than one key in dictionary spec for stage {} in stages list".format(index)
@@ -68,7 +70,7 @@ def _make_stage(index, output_dir, stage_cfg, default_type="BinnedDataframe", de
             raise BadStagesDescription(msg)
     else:
         msg = "Bad stage configuration, for stage {} in stages list".format(index)
-        logger.error(msg + "\n Each stage config must be a dictionary with single key")
+        logger.error(msg + ". Each stage config must be a dictionary with single key")
         raise BadStagesDescription(msg)
 
     # Find the actual concrete class based on the string

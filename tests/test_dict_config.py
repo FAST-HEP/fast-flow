@@ -16,8 +16,8 @@ def test_get_stage_class_default_module():
     assert fakes.FakeScribblerArgs.__name__ == actual_class.__name__
 
 
-def test__make_stage_string(tmpdir):
-    name, stage = dict_config._make_stage(1, tmpdir, {"just_a_stage_name": "FakeScribblerArgs"}, default_module=fakes)
+def test__make_stage_string():
+    name, stage = dict_config._make_stage(1, {"just_a_stage_name": "FakeScribblerArgs"}, default_module=fakes)
     assert stage.__name__, fakes.FakeScribblerArgs.__name__
     assert name == "just_a_stage_name"
 
@@ -32,28 +32,28 @@ def cutflow_cfg():
     return {"my_second_stage": "FakeScribbler"}
 
 
-def test__make_stage_binned_df(tmpdir, binned_df_cfg):
-    name, stage = dict_config._make_stage(2, tmpdir, binned_df_cfg, default_module=fakes)
+def test__make_stage_binned_df(binned_df_cfg):
+    name, stage = dict_config._make_stage(2, binned_df_cfg, default_module=fakes)
     assert stage.__name__, fakes.FakeScribblerArgs.__name__
     assert name == "my_first_stage"
 
 
-def test__make_stage_cutflow(tmpdir, cutflow_cfg):
-    name, stage = dict_config._make_stage(2, tmpdir, cutflow_cfg, default_module=fakes)
+def test__make_stage_cutflow(cutflow_cfg):
+    name, stage = dict_config._make_stage(2, cutflow_cfg, default_module=fakes)
     assert stage.__name__, fakes.FakeScribbler.__name__
     assert name == "my_second_stage"
 
 
-def test__make_stage_raises(tmpdir):
+def test__make_stage_raises():
     with pytest.raises(dict_config.BadStagesDescription) as ex:
         cfg = {"my_third_stage": "bad_stage_type"}
-        dict_config._make_stage(3, tmpdir, cfg)
+        dict_config._make_stage(3, cfg)
     assert "Unknown type" in str(ex)
 
     with pytest.raises(dict_config.BadStagesDescription) as ex:
         cfg = {"my_third_stage": "CutFlow",
                "bad_fourth_stage": "BinnedDataframe"}
-        dict_config._make_stage(4, tmpdir, cfg)
+        dict_config._make_stage(4, cfg)
     assert "More than one key" in str(ex)
 
 
@@ -62,8 +62,8 @@ def a_stage_list(binned_df_cfg, cutflow_cfg):
     return [binned_df_cfg, cutflow_cfg]
 
 
-def test__create_stages(a_stage_list, tmpdir):
-    stages = dict_config._create_stages(a_stage_list, tmpdir, default_module=fakes)
+def test__create_stages(a_stage_list):
+    stages = dict_config._create_stages(a_stage_list, default_module=fakes)
     assert len(stages) == 2
     assert stages[0][0] == "my_first_stage"
     assert stages[1][0] == "my_second_stage"
