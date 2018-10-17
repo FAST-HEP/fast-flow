@@ -50,9 +50,9 @@ python37:
   script: tox -e py37
   allow_failure: true
 
-docs:
-  stage: test
-  script: make docs
+# docs:
+#   stage: test
+#   script: make docs
 
 deploy_pypi:
   stage: deploy
