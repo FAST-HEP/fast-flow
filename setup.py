@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://gitlab.cern.ch/fast-hep/public/fast-flow",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=["tests"]),
     install_requires=['six', 'pyyaml'],
     #setup_requires=["pytest-runner"],
     tests_require=["pytest"],
