@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 import pytest
 import fast_flow.v1.dict_config as dict_config
-import sys, os
+import os
+import sys
 sys.path.append(os.path.dirname(__file__))
 from . import fake_scribbler_to_test as fakes
 
@@ -67,8 +68,8 @@ def test__create_stages(a_stage_list):
     assert len(stages) == 2
     assert stages[0][0] == "my_first_stage"
     assert stages[1][0] == "my_second_stage"
-    assert stages[0][1].__name__ ==  fakes.FakeScribblerArgs.__name__
-    assert stages[1][1].__name__ ==  fakes.FakeScribbler.__name__
+    assert stages[0][1].__name__ == fakes.FakeScribblerArgs.__name__
+    assert stages[1][1].__name__ == fakes.FakeScribbler.__name__
 
 
 @pytest.fixture
@@ -89,12 +90,12 @@ def all_stage_configs():
     return dict(my_first_stage=binned_df_cfg_1, my_second_stage=cutflow_cfg, my_third_stage=binned_df_cfg_2)
 
 
-#def test__configure_stages(a_stage_list, all_stage_configs, tmpdir):
+# def test__configure_stages(a_stage_list, all_stage_configs, tmpdir):
 #    stages = dict_config._create_stages(a_stage_list, tmpdir)
 #    dict_config._configure_stages(stages, all_stage_configs)
 #
 #
-#def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
+# def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
 #    rc_pairs = dict_config.sequence_from_dict(a_stage_list, output_dir=str(tmpdir), **all_stage_configs)
 #    # 3 stages in list, but one stage makes 2 pairs, so look for 4 rc pairs in total
 #    assert len(rc_pairs) == 4
