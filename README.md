@@ -1,3 +1,8 @@
+[![pypi package](https://img.shields.io/pypi/v/fast-flow.svg)](https://pypi.org/project/fast-flow/)
+[![pipeline status](https://gitlab.cern.ch/fast-hep/public/fast-flow/badges/master/pipeline.svg)](https://gitlab.cern.ch/fast-hep/public/fast-flow/commits/master)
+[![coverage report](https://gitlab.cern.ch/fast-hep/public/fast-flow/badges/master/coverage.svg)](https://gitlab.cern.ch/fast-hep/public/fast-flow/commits/master)
+
+
 fast-flow: A YAML-based processing configuration
 ================================================
 Provides a simple interface to describe a processing chain, where a user names
