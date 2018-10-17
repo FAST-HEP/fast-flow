@@ -6,10 +6,6 @@ variables:
 before_script:
   - pip install -r requirements_dev.txt
 
-after_script:
-  - pip install codecov
-  # - codecov --token=<>
-
 stages:
   - quick-checks
   - build
@@ -49,6 +45,11 @@ python37:
   stage: test
   script: tox -e py37
   allow_failure: true
+
+coverage:
+  image: kreczko/root-debian:6-14-04-python3.6
+  stage: test
+  script: make coverage
 
 # docs:
 #   stage: test
