@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 import six
-import collections
 import importlib
 from .config_exceptions import BadConfig
 import os
