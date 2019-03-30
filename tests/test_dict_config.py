@@ -72,30 +72,39 @@ def test__create_stages(a_stage_list):
     assert stages[1][1].__name__ == fakes.FakeScribbler.__name__
 
 
+# @pytest.fixture
+# def all_stage_configs():
+#     bins_alpha = {"in": "AlphaT", "out": "alphaT", "bins": dict(nbins=10, low=0, high=2.5)}
+#     bins_pt = {"in": "jet_pt", "out": "pt_leadJet", "bins": dict(edges=[0, 20., 100.], overflow=True), "index": 0}
+#     bins_region = {"in": "REGION", "out": "region"}
+#     weight_dict = dict(none=1, weighted="weight")
+#     binned_df_cfg_1 = dict(binning=[bins_pt, bins_region], weights=weight_dict)
+#     binned_df_cfg_2 = dict(binning=[bins_alpha], weights=None)
+# 
+#     selection_cut_1 = "ev.jet_pt[0] > 0"
+#     selection_cut_2 = "ev.nJet > 1"
+#     selection = dict(All=[selection_cut_1, dict(Any=dict(Not=selection_cut_2))])
+#     cutflow_cfg = dict(selection=selection,
+#                        aliases=dict(some_alias="ev.something == 1"),
+#                        counter_weights="an_attribrute")
+#     return dict(my_first_stage=binned_df_cfg_1, my_second_stage=cutflow_cfg, my_third_stage=binned_df_cfg_2)
+
 @pytest.fixture
 def all_stage_configs():
-    bins_alpha = {"in": "AlphaT", "out": "alphaT", "bins": dict(nbins=10, low=0, high=2.5)}
-    bins_pt = {"in": "jet_pt", "out": "pt_leadJet", "bins": dict(edges=[0, 20., 100.], overflow=True), "index": 0}
-    bins_region = {"in": "REGION", "out": "region"}
-    weight_dict = dict(none=1, weighted="weight")
-    binned_df_cfg_1 = dict(binning=[bins_pt, bins_region], weights=weight_dict)
-    binned_df_cfg_2 = dict(binning=[bins_alpha], weights=None)
-
-    selection_cut_1 = "ev.jet_pt[0] > 0"
-    selection_cut_2 = "ev.nJet > 1"
-    selection = dict(All=[selection_cut_1, dict(Any=dict(Not=selection_cut_2))])
-    cutflow_cfg = dict(selection=selection,
-                       aliases=dict(some_alias="ev.something == 1"),
-                       counter_weights="an_attribrute")
-    return dict(my_first_stage=binned_df_cfg_1, my_second_stage=cutflow_cfg, my_third_stage=binned_df_cfg_2)
-
+    scribbler_no_args = dict()
+    scribbler_w_args_1 = dict(an_int=3, a_str="hello world",
+                             some_other_arg=True,
+                             yet_more_arg=list(range(3)))
+    return dict(my_first_stage=scribbler_w_args_1,
+             my_second_stage=scribbler_no_args,
+             my_third_stage=scribbler_no_args)
 
 # def test__configure_stages(a_stage_list, all_stage_configs, tmpdir):
-#    stages = dict_config._create_stages(a_stage_list, tmpdir)
-#    dict_config._configure_stages(stages, all_stage_configs)
-#
-#
-# def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
-#    rc_pairs = dict_config.sequence_from_dict(a_stage_list, output_dir=str(tmpdir), **all_stage_configs)
-#    # 3 stages in list, but one stage makes 2 pairs, so look for 4 rc pairs in total
-#    assert len(rc_pairs) == 4
+#     stages = dict_config._create_stages(a_stage_list, default_module=fakes)
+#     dict_config._configure_stages(stages, tmpdir, all_stage_configs)
+
+
+def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
+    general = dict(backend="fake_scribbler_to_test", output_dir=str(tmpdir))
+    rc_pairs = dict_config.sequence_from_dict(a_stage_list, general, **all_stage_configs)
+    assert len(rc_pairs) == 2
