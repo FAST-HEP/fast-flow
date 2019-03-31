@@ -24,24 +24,19 @@ def sequence_from_dict(stages, general={}, **stage_descriptions):
     default_module = general.get("backend", None)
     if default_module:
         default_module = importlib.import_module(default_module)
-    stages = _create_stages(stages, default_module=default_module)
-    stages = _configure_stages(stages, output_dir, stage_descriptions)
+    stages = _create_stages(stages, output_dir, stage_descriptions, default_module=default_module)
     return stages
 
 
-def _create_stages(stages, default_module=None):
+def _create_stages(stages, output_dir, stage_descriptions, default_module=None):
     if not isinstance(stages, list):
         msg = "Bad stage list: Should be a list"
         logger.error(msg + ", but instead got a '{}'".format(type(stages)))
         raise BadStageList(msg)
-    return [infer_stage_name_class(i, stage_cfg, default_module=default_module) for i, stage_cfg in enumerate(stages)]
-
-
-def _configure_stages(stages, output_dir, stage_descriptions):
     out_stages = []
-    for name, stage_class in stages:
-        stage = _configure_stage(name, stage_class, output_dir, stage_descriptions)
-        out_stages.append(stage)
+    for i, stage_cfg in enumerate(stages):
+        name, stage_class = infer_stage_name_class(i, stage_cfg, default_module=default_module)
+        out_stages += _configure_stage(name, stage_class, output_dir, stage_descriptions)
     return out_stages
 
 
@@ -57,7 +52,7 @@ def _configure_stage(name, stage_class, out_dir, stage_descriptions):
         stage = stage_class(*cfg)
     else:
         stage = stage_class(cfg, name=name)
-    return stage
+    return [stage]
 
 
 def infer_stage_name_class(index, stage_cfg, default_type="BinnedDataframe", default_module=None):

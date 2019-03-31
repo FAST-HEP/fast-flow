@@ -63,13 +63,13 @@ def a_stage_list(binned_df_cfg, cutflow_cfg):
     return [binned_df_cfg, cutflow_cfg]
 
 
-def test__create_stages(a_stage_list):
-    stages = dict_config._create_stages(a_stage_list, default_module=fakes)
-    assert len(stages) == 2
-    assert stages[0][0] == "my_first_stage"
-    assert stages[1][0] == "my_second_stage"
-    assert stages[0][1].__name__ == fakes.FakeScribblerArgs.__name__
-    assert stages[1][1].__name__ == fakes.FakeScribbler.__name__
+# def test__create_stages(a_stage_list):
+#     stages = dict_config._create_stages(a_stage_list, default_module=fakes)
+#     assert len(stages) == 2
+#     assert stages[0][0] == "my_first_stage"
+#     assert stages[1][0] == "my_second_stage"
+#     assert stages[0][1].__name__ == fakes.FakeScribblerArgs.__name__
+#     assert stages[1][1].__name__ == fakes.FakeScribbler.__name__
 
 
 # @pytest.fixture
