@@ -5,11 +5,11 @@ import logging
 import six
 import importlib
 from .config_exceptions import BadConfig
-from . import read_sequence_yaml
+from .yaml_config import config_dict_from_yaml
 logger = logging.getLogger(__name__)
 
 
-__all__ = ["sequence_from_dict"]
+__all__ = ["read_sequence_dict"]
 
 
 class BadStagesDescription(BadConfig):
@@ -20,7 +20,7 @@ class BadStageList(BadConfig):
     pass
 
 
-def sequence_from_dict(stages, general={}, **stage_descriptions):
+def read_sequence_dict(stages, general={}, **stage_descriptions):
     output_dir = general.get("output_dir", os.getcwd())
     default_module = general.get("backend", None)
     if default_module:
@@ -45,7 +45,8 @@ def _create_stages(stages, output_dir, stage_descriptions, default_module=None):
 
 def instantiate_stage(name, stage_type, output_dir, stage_descriptions, default_module=None):
     if name == "IMPORT":
-        return read_sequence_yaml(stage_type, output_dir=output_dir)
+        cfg = config_dict_from_yaml(stage_type, output_dir=output_dir)
+        return read_sequence_dict(**cfg)
 
     stage_class = get_stage_class(stage_type, default_module, raise_exception=False)
     if not stage_class:

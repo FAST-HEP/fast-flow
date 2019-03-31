@@ -18,7 +18,7 @@ def test_get_stage_class_default_module():
 
 
 def test__make_stage_string():
-    name, stage = dict_config.infer_stage_name_class(1, {"just_a_stage_name": "FakeScribblerArgs"}, default_module=fakes)
+    name, stage = dict_config.infer_stage_name_class(1, {"just_a_stage_name": "FakeScribblerArgs"})
     assert stage, fakes.FakeScribblerArgs.__name__
     assert name == "just_a_stage_name"
 
@@ -34,13 +34,13 @@ def cutflow_cfg():
 
 
 def test__make_stage_binned_df(binned_df_cfg):
-    name, stage = dict_config.infer_stage_name_class(2, binned_df_cfg, default_module=fakes)
+    name, stage = dict_config.infer_stage_name_class(2, binned_df_cfg)
     assert stage, fakes.FakeScribblerArgs.__name__
     assert name == "my_first_stage"
 
 
 def test__make_stage_cutflow(cutflow_cfg):
-    name, stage = dict_config.infer_stage_name_class(2, cutflow_cfg, default_module=fakes)
+    name, stage = dict_config.infer_stage_name_class(2, cutflow_cfg)
     assert stage, fakes.FakeScribbler.__name__
     assert name == "my_second_stage"
 
@@ -107,7 +107,7 @@ def all_stage_configs():
 
 def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
     general = dict(backend="tests.fake_scribbler_to_test", output_dir=str(tmpdir))
-    stages = dict_config.sequence_from_dict(a_stage_list, general, **all_stage_configs)
+    stages = dict_config.read_sequence_dict(a_stage_list, general, **all_stage_configs)
     assert len(stages) == 2
     assert isinstance(stages[0], fakes.FakeScribblerArgs)
     assert isinstance(stages[1], fakes.FakeScribbler)
