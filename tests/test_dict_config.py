@@ -108,7 +108,6 @@ def all_stage_configs():
 def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
     general = dict(backend="tests.fake_scribbler_to_test", output_dir=str(tmpdir))
     stages = dict_config.sequence_from_dict(a_stage_list, general, **all_stage_configs)
-    print stages
     assert len(stages) == 2
     assert isinstance(stages[0], fakes.FakeScribblerArgs)
     assert isinstance(stages[1], fakes.FakeScribbler)
