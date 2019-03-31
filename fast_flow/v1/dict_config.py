@@ -25,11 +25,14 @@ def read_sequence_dict(stages, general={}, **stage_descriptions):
     default_module = general.get("backend", None)
     if default_module:
         default_module = importlib.import_module(default_module)
-    stages = _create_stages(stages, output_dir, stage_descriptions, default_module=default_module)
+    stages = _create_stages(stages, output_dir, stage_descriptions,
+                            this_dir=general.get("this_dir", None),
+                            default_module=default_module)
     return stages
 
 
-def _create_stages(stages, output_dir, stage_descriptions, default_module=None):
+def _create_stages(stages, output_dir, stage_descriptions,
+                   this_dir=None, default_module=None):
     if not isinstance(stages, list):
         msg = "Bad stage list: Should be a list"
         logger.error(msg + ", but instead got a '{}'".format(type(stages)))
@@ -37,17 +40,23 @@ def _create_stages(stages, output_dir, stage_descriptions, default_module=None):
     out_stages = []
     for i, stage_cfg in enumerate(stages):
         name, stage_type = infer_stage_name_class(i, stage_cfg)
+        if name == "IMPORT":
+            out_stages += import_yaml(stage_type, output_dir, this_dir)
+            continue
+
         out_stages += instantiate_stage(name, stage_type, output_dir,
                                         stage_descriptions=stage_descriptions,
                                         default_module=default_module)
     return out_stages
 
 
-def instantiate_stage(name, stage_type, output_dir, stage_descriptions, default_module=None):
-    if name == "IMPORT":
-        cfg = config_dict_from_yaml(stage_type, output_dir=output_dir)
-        return read_sequence_dict(**cfg)
+def import_yaml(filepath, output_dir, this_dir):
+    filepath = filepath.format(this_dir=this_dir)
+    cfg = config_dict_from_yaml(filepath, output_dir=output_dir)
+    return read_sequence_dict(**cfg)
 
+
+def instantiate_stage(name, stage_type, output_dir, stage_descriptions, default_module=None):
     stage_class = get_stage_class(stage_type, default_module, raise_exception=False)
     if not stage_class:
         raise BadStagesDescription("Unknown type for stage '{}': {}".format(name, stage_type))

@@ -1,3 +1,6 @@
+import os
+
+
 def config_dict_from_yaml(cfg_filename, output_dir=None, backend=None):
     import yaml
     with open(cfg_filename, "r") as infile:
@@ -10,5 +13,6 @@ def config_dict_from_yaml(cfg_filename, output_dir=None, backend=None):
         cfg["general"]["output_dir"] = output_dir
     if backend:
         cfg["general"]["backend"] = backend
+    cfg["general"]["this_dir"] = os.path.dirname(cfg_filename)
 
     return cfg
