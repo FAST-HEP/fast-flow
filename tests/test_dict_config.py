@@ -45,17 +45,17 @@ def test__make_stage_cutflow(cutflow_cfg):
     assert name == "my_second_stage"
 
 
-#def test__make_stage_raises():
-#    with pytest.raises(dict_config.BadStagesDescription) as ex:
-#        cfg = {"my_third_stage": "bad_stage_type"}
-#        dict_config.infer_stage_name_class(3, cfg)
-#    assert "Unknown type" in str(ex)
+# def test__make_stage_raises():
+#     with pytest.raises(dict_config.BadStagesDescription) as ex:
+#         cfg = {"my_third_stage": "bad_stage_type"}
+#         dict_config.infer_stage_name_class(3, cfg)
+#     assert "Unknown type" in str(ex)
 #
-#    with pytest.raises(dict_config.BadStagesDescription) as ex:
-#        cfg = {"my_third_stage": "CutFlow",
-#               "bad_fourth_stage": "BinnedDataframe"}
-#        dict_config.infer_stage_name_class(4, cfg)
-#    assert "More than one key" in str(ex)
+#     with pytest.raises(dict_config.BadStagesDescription) as ex:
+#         cfg = {"my_third_stage": "CutFlow",
+#                "bad_fourth_stage": "BinnedDataframe"}
+#         dict_config.infer_stage_name_class(4, cfg)
+#     assert "More than one key" in str(ex)
 
 
 @pytest.fixture
