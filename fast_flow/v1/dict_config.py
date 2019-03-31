@@ -42,7 +42,7 @@ def _configure_stages(stages, output_dir, stage_descriptions):
     out_stages = []
     for name, stage_class in stages:
         cfg = stage_descriptions.get(name, None)
-        if not cfg:
+        if cfg is None:
             raise BadStagesDescription("Missing description for stage '{}'".format(name))
         if isinstance(cfg, dict):
             cfg.setdefault("name", name)
