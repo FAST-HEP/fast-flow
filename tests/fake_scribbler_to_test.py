@@ -1,5 +1,6 @@
 class FakeScribbler(object):
     value = "something"
+
     def __init__(self, name, out_dir):
         self.name = name
         self.out_dir = out_dir

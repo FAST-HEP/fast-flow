@@ -80,7 +80,7 @@ def test__create_stages(a_stage_list):
 #     weight_dict = dict(none=1, weighted="weight")
 #     binned_df_cfg_1 = dict(binning=[bins_pt, bins_region], weights=weight_dict)
 #     binned_df_cfg_2 = dict(binning=[bins_alpha], weights=None)
-# 
+#
 #     selection_cut_1 = "ev.jet_pt[0] > 0"
 #     selection_cut_2 = "ev.nJet > 1"
 #     selection = dict(All=[selection_cut_1, dict(Any=dict(Not=selection_cut_2))])
@@ -89,15 +89,16 @@ def test__create_stages(a_stage_list):
 #                        counter_weights="an_attribrute")
 #     return dict(my_first_stage=binned_df_cfg_1, my_second_stage=cutflow_cfg, my_third_stage=binned_df_cfg_2)
 
+
 @pytest.fixture
 def all_stage_configs():
     scribbler_no_args = dict()
     scribbler_w_args_1 = dict(an_int=3, a_str="hello world",
-                             some_other_arg=True,
-                             yet_more_arg=list(range(3)))
+                              some_other_arg=True,
+                              yet_more_arg=list(range(3)))
     return dict(my_first_stage=scribbler_w_args_1,
-             my_second_stage=scribbler_no_args,
-             my_third_stage=scribbler_no_args)
+                my_second_stage=scribbler_no_args,
+                my_third_stage=scribbler_no_args)
 
 # def test__configure_stages(a_stage_list, all_stage_configs, tmpdir):
 #     stages = dict_config._create_stages(a_stage_list, default_module=fakes)
