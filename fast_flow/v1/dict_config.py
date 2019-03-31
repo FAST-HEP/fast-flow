@@ -1,10 +1,11 @@
 from __future__ import absolute_import
-import six
-import importlib
-from .config_exceptions import BadConfig
 import os
 import sys
 import logging
+import six
+import importlib
+from .config_exceptions import BadConfig
+from . import read_sequence_yaml
 logger = logging.getLogger(__name__)
 
 
@@ -35,13 +36,22 @@ def _create_stages(stages, output_dir, stage_descriptions, default_module=None):
         raise BadStageList(msg)
     out_stages = []
     for i, stage_cfg in enumerate(stages):
-        name, stage_type = infer_stage_name_class(i, stage_cfg, default_module=default_module)
-        # out_stages = instantiate_stage(name, stage_class, default_module, output_dir, stage_descriptions)
-        stage_class = get_stage_class(stage_type, default_module, raise_exception=False)
-        if not stage_class:
-            raise BadStagesDescription("Unknown type for stage '{}': {}".format(name, stage_type))
-        out_stages += _configure_stage(name, stage_class, output_dir, stage_descriptions)
+        name, stage_type = infer_stage_name_class(i, stage_cfg)
+        out_stages += instantiate_stage(name, stage_type, output_dir,
+                                        stage_descriptions=stage_descriptions,
+                                        default_module=default_module)
     return out_stages
+
+
+def instantiate_stage(name, stage_type, output_dir, stage_descriptions, default_module=None):
+    if name == "IMPORT":
+        return read_sequence_yaml(stage_type, output_dir=output_dir)
+
+    stage_class = get_stage_class(stage_type, default_module, raise_exception=False)
+    if not stage_class:
+        raise BadStagesDescription("Unknown type for stage '{}': {}".format(name, stage_type))
+    result = _configure_stage(name, stage_class, output_dir, stage_descriptions)
+    return [result]
 
 
 def _configure_stage(name, stage_class, out_dir, stage_descriptions):
@@ -56,10 +66,10 @@ def _configure_stage(name, stage_class, out_dir, stage_descriptions):
         stage = stage_class(*cfg)
     else:
         stage = stage_class(cfg, name=name)
-    return [stage]
+    return stage
 
 
-def infer_stage_name_class(index, stage_cfg, default_type="BinnedDataframe", default_module=None):
+def infer_stage_name_class(index, stage_cfg):
     if not isinstance(stage_cfg, dict):
         msg = "Bad stage configuration, for stage {} in stages list".format(index)
         logger.error(msg + ". Each stage config must be a dictionary with single key")
