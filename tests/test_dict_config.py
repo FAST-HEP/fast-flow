@@ -30,7 +30,7 @@ def binned_df_cfg():
 
 @pytest.fixture
 def cutflow_cfg():
-    return {"my_second_stage": "FakeScribbler"}
+    return {"my_second_stage": "tests.fake_scribbler_to_test.FakeScribbler"}
 
 
 def test__make_stage_binned_df(binned_df_cfg):
@@ -106,6 +106,12 @@ def all_stage_configs():
 
 
 def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
-    general = dict(backend="fake_scribbler_to_test", output_dir=str(tmpdir))
-    rc_pairs = dict_config.sequence_from_dict(a_stage_list, general, **all_stage_configs)
-    assert len(rc_pairs) == 2
+    general = dict(backend="tests.fake_scribbler_to_test", output_dir=str(tmpdir))
+    stages = dict_config.sequence_from_dict(a_stage_list, general, **all_stage_configs)
+    print stages
+    assert len(stages) == 2
+    assert isinstance(stages[0], fakes.FakeScribblerArgs)
+    assert isinstance(stages[1], fakes.FakeScribbler)
+    assert stages[0].an_int == 3
+    assert stages[0].a_str == "hello world"
+    assert len(stages[0].other_args) == 2
