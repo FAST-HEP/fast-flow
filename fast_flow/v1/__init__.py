@@ -8,7 +8,7 @@ __all__ = ["read_sequence_yaml", "read_sequence_dict"]
 def read_sequence_yaml(cfg_filename, output_dir=None):
     import yaml
     with open(cfg_filename, "r") as infile:
-        cfg = yaml.load(infile)
+        cfg = yaml.safe_load(infile)
 
     # Override the output_dir in the config file if this function is given one
     if output_dir:
