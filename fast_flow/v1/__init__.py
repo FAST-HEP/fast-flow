@@ -1,23 +1,13 @@
 from __future__ import absolute_import
-from .dict_config import sequence_from_dict
+from .dict_config import read_sequence_dict
+from .yaml_config import config_dict_from_yaml
 
 
 __all__ = ["read_sequence_yaml", "read_sequence_dict"]
 
 
-def read_sequence_yaml(cfg_filename, output_dir=None):
-    import yaml
-    with open(cfg_filename, "r") as infile:
-        cfg = yaml.safe_load(infile)
-
-    # Override the output_dir in the config file if this function is given one
-    if output_dir:
-        if "general" not in cfg:
-            cfg["general"] = {}
-        cfg["general"]["output_dir"] = output_dir
-
-    return sequence_from_dict(**cfg)
-
-
-def read_sequence_dict(cfg):
-    return sequence_from_dict(**cfg)
+def read_sequence_yaml(cfg_filename, output_dir=None, backend=None):
+    cfg = config_dict_from_yaml(cfg_filename,
+                                output_dir=output_dir,
+                                backend=backend)
+    return read_sequence_dict(**cfg)
