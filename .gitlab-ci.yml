@@ -1,4 +1,4 @@
-image: kreczko/root-debian:6-14-04-python2.7
+image: python
 
 variables:
   TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
@@ -14,7 +14,7 @@ stages:
   - cleanup
 
 linters:
-  image: python:3.5
+  image: python:3.6
   stage: quick-checks
   script:
     - make lint
@@ -31,23 +31,21 @@ build:
     expire_in: 1 week
 
 python2:
-  image: kreczko/root-debian:6-14-04-python2.7
+  image: python:2.7
   stage: test
   script: tox -e py27
 
 python36:
-  image: kreczko/root-debian:6-14-04-python3.6
+  image: python:3.6
   stage: test
   script: tox -e py36
 
 python37:
-  image: kreczko/root-debian:6-14-04-python3.7
+  image: python:3.7
   stage: test
   script: tox -e py37
-  allow_failure: true
 
 coverage:
-  image: kreczko/root-debian:6-14-04-python3.6
   stage: test
   script: make coverage
 
@@ -56,8 +54,12 @@ coverage:
 #   script: make docs
 
 deploy_pypi:
+  image: python
   stage: deploy
   script:
+    - echo "[pypi]" >> ~/.pypirc
+    - echo "username =" $PYPI_USER >> ~/.pypirc
+    - echo "password =" $PYPI_PASSWORD >> ~/.pypirc
     - pip install -U twine setuptools
     - python setup.py check sdist bdist_wheel
     - twine upload dist/*
@@ -65,7 +67,6 @@ deploy_pypi:
     - tags
   except:
     - branches
-
 
 cleanup_pypirc:
   image: python
