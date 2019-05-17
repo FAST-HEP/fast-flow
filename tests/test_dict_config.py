@@ -3,8 +3,8 @@ import pytest
 import fast_flow.v1.dict_config as dict_config
 import os
 import sys
-sys.path.append(os.path.dirname(__file__))
 from . import fake_scribbler_to_test as fakes
+sys.path.append(os.path.dirname(__file__))
 
 
 def test_get_stage_class_full_module():
