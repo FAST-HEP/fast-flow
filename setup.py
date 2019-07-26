@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="fast-flow",
-    version="0.2.1",
+    version="0.3.0",
     author="Ben Krikler",
     author_email="fast-hep@cern.ch",
     description="YAML-based analysis flow description language",
