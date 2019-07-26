@@ -7,11 +7,11 @@ from . import fake_scribbler_to_test as fakes
 @pytest.fixture
 def config_1(tmpdir):
     content = """
-    general: 
+    general:
         backend: tests.fake_scribbler_to_test
         output_dir: %(tmpdir)s
 
-    stages: 
+    stages:
         - my_first_stage: tests.fake_scribbler_to_test.FakeScribbler
         - my_second_stage: FakeScribblerArgs
 
