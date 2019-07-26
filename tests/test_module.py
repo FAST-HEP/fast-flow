@@ -28,7 +28,7 @@ def config_1(tmpdir):
 
 
 def test_read_sequence_yaml(config_1):
-    stages = fast_flow.read_sequence_yaml(config_1)
+    stages = fast_flow.read_sequence_yaml(str(config_1))
     assert len(stages) == 2
     assert isinstance(stages[0], fakes.FakeScribbler)
     assert isinstance(stages[1], fakes.FakeScribblerArgs)
@@ -38,7 +38,7 @@ def test_read_sequence_yaml(config_1):
 
 
 def test_compile_sequence_yaml(config_1):
-    stages = fast_flow.compile_sequence_yaml(config_1)
+    stages = fast_flow.compile_sequence_yaml(str(config_1))
     stages = stages()
     assert len(stages) == 2
     assert isinstance(stages[0], fakes.FakeScribbler)
