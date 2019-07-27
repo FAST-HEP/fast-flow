@@ -21,18 +21,38 @@ class BadStageList(BadConfig):
 
 
 def read_sequence_dict(stages, general={}, **stage_descriptions):
+    return read_sequence_dict_internal(stages, general,
+                                       stage_descriptions,
+                                       return_future=False)
+
+
+def compile_sequence_dict(stages, general={}, **stage_descriptions):
+    sequence = read_sequence_dict_internal(stages, general,
+                                           stage_descriptions,
+                                           return_future=True)
+
+    def build():
+        return [s() for s in sequence]
+
+    return build
+
+
+def read_sequence_dict_internal(stages, general={},
+                                stage_descriptions={},
+                                return_future=False):
     output_dir = general.get("output_dir", os.getcwd())
     default_module = general.get("backend", None)
     if default_module:
         default_module = importlib.import_module(default_module)
     stages = _create_stages(stages, output_dir, stage_descriptions,
                             this_dir=general.get("this_dir", None),
-                            default_module=default_module)
+                            default_module=default_module,
+                            return_future=return_future)
     return stages
 
 
 def _create_stages(stages, output_dir, stage_descriptions,
-                   this_dir=None, default_module=None):
+                   this_dir=None, default_module=None, return_future=False):
     if not isinstance(stages, list):
         msg = "Bad stage list: Should be a list"
         logger.error(msg + ", but instead got a '{}'".format(type(stages)))
@@ -41,42 +61,57 @@ def _create_stages(stages, output_dir, stage_descriptions,
     for i, stage_cfg in enumerate(stages):
         name, stage_type = infer_stage_name_class(i, stage_cfg)
         if name == "IMPORT":
-            out_stages += import_yaml(stage_type, output_dir, this_dir)
+            out_stages += import_yaml(stage_type, output_dir, this_dir,
+                                      return_future=return_future)
             continue
 
         out_stages += instantiate_stage(name, stage_type, output_dir,
                                         stage_descriptions=stage_descriptions,
-                                        default_module=default_module)
+                                        default_module=default_module,
+                                        return_future=return_future,
+                                        )
     return out_stages
 
 
-def import_yaml(filepath, output_dir, this_dir):
+def import_yaml(filepath, output_dir, this_dir, return_future=False):
     filepath = filepath.format(this_dir=this_dir)
     cfg = config_dict_from_yaml(filepath, output_dir=output_dir)
-    return read_sequence_dict(**cfg)
+    stages = cfg.pop("stages")
+    general = cfg.pop("general", {})
+    return read_sequence_dict_internal(stages, general,
+                                       stage_descriptions=cfg,
+                                       return_future=return_future)
 
 
-def instantiate_stage(name, stage_type, output_dir, stage_descriptions, default_module=None):
+def instantiate_stage(name, stage_type, output_dir, stage_descriptions,
+                      default_module=None, return_future=False):
     stage_class = get_stage_class(stage_type, default_module, raise_exception=False)
     if not stage_class:
         raise BadStagesDescription("Unknown type for stage '{}': {}".format(name, stage_type))
-    result = _configure_stage(name, stage_class, output_dir, stage_descriptions)
+    result = _configure_stage(name, stage_class, output_dir,
+                              stage_descriptions, return_future=return_future)
     return [result]
 
 
-def _configure_stage(name, stage_class, out_dir, stage_descriptions):
+def _configure_stage(name, stage_class, out_dir,
+                     stage_descriptions, return_future=False):
     cfg = stage_descriptions.get(name, None)
     if cfg is None:
         raise BadStagesDescription("Missing description for stage '{}'".format(name))
-    if isinstance(cfg, dict):
-        cfg.setdefault("name", name)
-        cfg.setdefault("out_dir", out_dir)
-        stage = stage_class(**cfg)
-    elif isinstance(cfg, list):
-        stage = stage_class(*cfg)
-    else:
-        stage = stage_class(cfg, name=name)
-    return stage
+
+    def stage():
+        if isinstance(cfg, dict):
+            cfg.setdefault("name", name)
+            cfg.setdefault("out_dir", out_dir)
+            return stage_class(**cfg)
+        elif isinstance(cfg, list):
+            return stage_class(*cfg)
+        else:
+            return stage_class(cfg, name=name)
+
+    if return_future:
+        return stage
+    return stage()
 
 
 def infer_stage_name_class(index, stage_cfg):

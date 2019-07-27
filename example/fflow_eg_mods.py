@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Generator():
-    def __init__(self, mean, variance, quantity):
+    def __init__(self, name, out_dir, mean, variance, quantity):
         self.mean = mean
         self.variance = variance
         self.quantity = quantity
@@ -15,7 +15,7 @@ class Generator():
 
 
 class Summarize():
-    def __init__(self, methods, replace_values=False):
+    def __init__(self, name, out_dir, methods, replace_values=False):
         self.methods = {m: getattr(np, m) for m in methods}
         self.replace_values = replace_values
 

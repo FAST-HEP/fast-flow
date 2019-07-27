@@ -114,3 +114,16 @@ def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
     assert stages[0].an_int == 3
     assert stages[0].a_str == "hello world"
     assert len(stages[0].other_args) == 2
+
+
+def test_compile_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
+    general = dict(backend="tests.fake_scribbler_to_test", output_dir=str(tmpdir))
+    compiled = dict_config.compile_sequence_dict(a_stage_list, general, **all_stage_configs)
+    stages = compiled()
+
+    assert len(stages) == 2
+    assert isinstance(stages[0], fakes.FakeScribblerArgs)
+    assert isinstance(stages[1], fakes.FakeScribbler)
+    assert stages[0].an_int == 3
+    assert stages[0].a_str == "hello world"
+    assert len(stages[0].other_args) == 2
