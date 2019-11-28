@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.4.0] - 2019-11-28
+### Added
+- travis CI autodeployment to pypi
+
 ### Changed
 - Default backend can be provided as a module / object instead of a string, issue #6 [@benkrikler](https://github.com/benkrikler)
 

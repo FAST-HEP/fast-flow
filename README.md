@@ -1,6 +1,6 @@
 [![pypi package](https://img.shields.io/pypi/v/fast-flow.svg)](https://pypi.org/project/fast-flow/)
 [![pipeline status](https://gitlab.cern.ch/fast-hep/public/fast-flow/badges/master/pipeline.svg)](https://gitlab.cern.ch/fast-hep/public/fast-flow/commits/master)
-[![coverage report](https://gitlab.cern.ch/fast-hep/public/fast-flow/badges/master/coverage.svg)](https://gitlab.cern.ch/fast-hep/public/fast-flow/commits/master)
+[![codecov](https://codecov.io/gh/FAST-HEP/fast-flow/branch/master/graph/badge.svg)](https://codecov.io/gh/FAST-HEP/fast-flow)
 
 
 fast-flow: A YAML-based processing configuration
