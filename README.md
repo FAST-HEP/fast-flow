@@ -16,4 +16,4 @@ pip install --user fast-flow
 
 ## Documentation
 While better documentation is on its way, you might want to look at the examples directory to see how this can be used.
-In addition, the [`fast-carpenter`](https://gitlab.cern.ch/fast-hep/public/fast-carpenter) package makes use of this, so it might be helpful to see how this is used there.
+In addition, the [`fast-carpenter`](https://github.com/fast-hep/fast-carpenter) package makes use of this, so it might be helpful to see how this is used there.

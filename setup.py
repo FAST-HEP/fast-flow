@@ -25,7 +25,7 @@ setuptools.setup(
     description="YAML-based analysis flow description language",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://gitlab.cern.ch/fast-hep/public/fast-flow",
+    url="https://github.com/fast-hep/fast-flow",
     packages=setuptools.find_packages(exclude=["tests"]),
     install_requires=['six', 'pyyaml'],
     #setup_requires=["pytest-runner"],
