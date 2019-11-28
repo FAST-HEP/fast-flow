@@ -42,7 +42,7 @@ def read_sequence_dict_internal(stages, general={},
                                 return_future=False):
     output_dir = general.get("output_dir", os.getcwd())
     default_module = general.get("backend", None)
-    if default_module:
+    if default_module and isinstance(default_module, six.string_types):
         default_module = importlib.import_module(default_module)
     stages = _create_stages(stages, output_dir, stage_descriptions,
                             this_dir=general.get("this_dir", None),

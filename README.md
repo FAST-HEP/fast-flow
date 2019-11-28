@@ -1,6 +1,6 @@
 [![pypi package](https://img.shields.io/pypi/v/fast-flow.svg)](https://pypi.org/project/fast-flow/)
-[![pipeline status](https://gitlab.cern.ch/fast-hep/public/fast-flow/badges/master/pipeline.svg)](https://gitlab.cern.ch/fast-hep/public/fast-flow/commits/master)
-[![coverage report](https://gitlab.cern.ch/fast-hep/public/fast-flow/badges/master/coverage.svg)](https://gitlab.cern.ch/fast-hep/public/fast-flow/commits/master)
+[![Build Status](https://travis-ci.com/FAST-HEP/fast-flow.svg?branch=master)](https://travis-ci.com/FAST-HEP/fast-flow)
+[![codecov](https://codecov.io/gh/FAST-HEP/fast-flow/branch/master/graph/badge.svg)](https://codecov.io/gh/FAST-HEP/fast-flow)
 
 
 fast-flow: A YAML-based processing configuration
@@ -16,4 +16,4 @@ pip install --user fast-flow
 
 ## Documentation
 While better documentation is on its way, you might want to look at the examples directory to see how this can be used.
-In addition, the [`fast-carpenter`](https://gitlab.cern.ch/fast-hep/public/fast-carpenter) package makes use of this, so it might be helpful to see how this is used there.
+In addition, the [`fast-carpenter`](https://github.com/fast-hep/fast-carpenter) package makes use of this, so it might be helpful to see how this is used there.
