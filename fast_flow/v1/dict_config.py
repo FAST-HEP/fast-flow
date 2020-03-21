@@ -4,6 +4,7 @@ import sys
 import logging
 import six
 import importlib
+import copy
 from .config_exceptions import BadConfig
 from .yaml_config import config_dict_from_yaml
 logger = logging.getLogger(__name__)
@@ -62,7 +63,8 @@ def _create_stages(stages, output_dir, stage_descriptions,
         name, stage_type = infer_stage_name_class(i, stage_cfg)
         if name == "IMPORT":
             out_stages += import_yaml(stage_type, output_dir, this_dir,
-                                      return_future=return_future)
+                                      return_future=return_future,
+                                      default_module=default_module)
             continue
 
         out_stages += instantiate_stage(name, stage_type, output_dir,
@@ -73,9 +75,10 @@ def _create_stages(stages, output_dir, stage_descriptions,
     return out_stages
 
 
-def import_yaml(filepath, output_dir, this_dir, return_future=False):
+def import_yaml(filepath, output_dir, this_dir,
+                return_future=False, default_module=None):
     filepath = filepath.format(this_dir=this_dir)
-    cfg = config_dict_from_yaml(filepath, output_dir=output_dir)
+    cfg = config_dict_from_yaml(filepath, output_dir=output_dir, backend=default_module)
     stages = cfg.pop("stages")
     general = cfg.pop("general", {})
     return read_sequence_dict_internal(stages, general,
@@ -96,6 +99,7 @@ def instantiate_stage(name, stage_type, output_dir, stage_descriptions,
 def _configure_stage(name, stage_class, out_dir,
                      stage_descriptions, return_future=False):
     cfg = stage_descriptions.get(name, None)
+    cfg = copy.deepcopy(cfg)
     if cfg is None:
         raise BadStagesDescription("Missing description for stage '{}'".format(name))
 
