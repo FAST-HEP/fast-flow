@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2020-03-21
+### Changed
+- Fixed issue where default backend wasn't propagated to imported files, issue #11 [@benkrikler](https://github.com/benkrikler)
+- Fixed issue when stage description is a clone of another, issue #12 [@benkrikler](https://github.com/benkrikler)
+
 ## [0.4.0] - 2019-11-28
 ### Added
 - travis CI autodeployment to pypi
