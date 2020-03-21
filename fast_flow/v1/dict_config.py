@@ -4,6 +4,7 @@ import sys
 import logging
 import six
 import importlib
+import copy
 from .config_exceptions import BadConfig
 from .yaml_config import config_dict_from_yaml
 logger = logging.getLogger(__name__)
@@ -98,6 +99,7 @@ def instantiate_stage(name, stage_type, output_dir, stage_descriptions,
 def _configure_stage(name, stage_class, out_dir,
                      stage_descriptions, return_future=False):
     cfg = stage_descriptions.get(name, None)
+    cfg = copy.deepcopy(cfg)
     if cfg is None:
         raise BadStagesDescription("Missing description for stage '{}'".format(name))
 
