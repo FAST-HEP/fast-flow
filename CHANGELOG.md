@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2020-07-25
+### Added
+- Transfer in help module previously in carpenter, issue #2, PR #14 [@benkrikler](https://github.com/benkrikler)
+
 ## [0.4.1] - 2020-03-21
 ### Added
 - Zenodo DOI to README
