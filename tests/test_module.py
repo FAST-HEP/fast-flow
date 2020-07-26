@@ -22,7 +22,28 @@ def config_1(tmpdir):
         some_other_arg: True
         yet_more_arg: [0, 1, 2]
     """ % dict(tmpdir=str(tmpdir))
-    out_file = tmpdir / "config.yml"
+    out_file = tmpdir / "config_1.yml"
+    out_file.write(content)
+    return out_file
+
+
+@pytest.fixture
+def config_2(config_1, tmpdir):
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/../config_1.yml"
+        - my_third_stage: FakeScribblerArgs
+
+    my_third_stage:
+        an_int: 100
+        a_str: wooorrrddd
+        yet_more_arg:
+            one: 1
+            two: "222"
+    """
+    subdir = tmpdir / "subdir"
+    subdir.mkdir()
+    out_file = subdir / "config_2.yml"
     out_file.write(content)
     return out_file
 
@@ -46,3 +67,17 @@ def test_compile_sequence_yaml(config_1):
     assert stages[1].an_int == 3
     assert stages[1].a_str == "hello world"
     assert len(stages[1].other_args) == 2
+
+
+def test_read_sequence_yaml_import(config_2, tmpdir):
+    stages = fast_flow.compile_sequence_yaml(str(config_2), backend=fakes)
+    stages = stages()
+    assert len(stages) == 3
+    assert isinstance(stages[0], fakes.FakeScribbler)
+    assert isinstance(stages[1], fakes.FakeScribblerArgs)
+    assert stages[1].an_int == 3
+    assert stages[1].a_str == "hello world"
+    assert isinstance(stages[2], fakes.FakeScribblerArgs)
+    assert stages[2].an_int == 100
+    assert stages[2].a_str == "wooorrrddd"
+    assert len(stages[2].other_args) == 1
