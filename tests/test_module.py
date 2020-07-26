@@ -93,8 +93,8 @@ def test_compile_sequence_yaml(config_1):
     assert len(stages[1].other_args) == 2
 
 
-def test_read_sequence_yaml_import(config_2, tmpdir):
-    stages = fast_flow.compile_sequence_yaml(str(config_2), backend=fakes)
+def test_compile_sequence_yaml_import(config_2, tmpdir):
+    stages = fast_flow.compile_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test")
     stages = stages()
     assert len(stages) == 3
     assert isinstance(stages[0], fakes.FakeScribbler)
