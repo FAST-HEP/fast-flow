@@ -29,9 +29,14 @@ def config_1(tmpdir):
 
 @pytest.fixture
 def config_2(config_1, tmpdir):
+    subdir = tmpdir / "subdir"
+    subdir.mkdir()
+    subsubdir = subdir / "subsubdir"
+    subsubdir.mkdir()
+
     content = """
     stages:
-        - IMPORT: "{this_dir}/../config_1.yml"
+        - IMPORT: "{this_dir}/config_1.yml"
         - my_third_stage: FakeScribblerArgs
 
     my_third_stage:
@@ -41,11 +46,30 @@ def config_2(config_1, tmpdir):
             one: 1
             two: "222"
     """
-    subdir = tmpdir / "subdir"
-    subdir.mkdir()
-    out_file = subdir / "config_2.yml"
-    out_file.write(content)
-    return out_file
+    config_2 = tmpdir / "config_2.yml"
+    config_2.write(content)
+
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/../config_2.yml"
+    """
+    config_3 = subdir / "config_3.yml"
+    config_3.write(content)
+
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/subdir/config_3.yml"
+    """
+    config_4 = tmpdir / "config_4.yml"
+    config_4.write(content)
+
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/../../config_4.yml"
+    """
+    config_5 = subsubdir / "config_5.yml"
+    config_5.write(content)
+    return config_5
 
 
 def test_read_sequence_yaml(config_1):
