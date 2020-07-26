@@ -7,15 +7,21 @@ __all__ = ["read_sequence_yaml", "compile_sequence_yaml",
            "read_sequence_dict", "compile_sequence_dict"]
 
 
-def read_sequence_yaml(cfg_filename, output_dir=None, backend=None):
+def read_sequence_yaml(cfg_filename, output_dir=None, backend=None, return_cfg=False):
     cfg = config_dict_from_yaml(cfg_filename,
                                 output_dir=output_dir,
                                 backend=backend)
-    return read_sequence_dict(**cfg)
+    sequence = read_sequence_dict(**cfg)
+    if return_cfg:
+        return sequence, cfg
+    return sequence
 
 
-def compile_sequence_yaml(cfg_filename, output_dir=None, backend=None):
+def compile_sequence_yaml(cfg_filename, output_dir=None, backend=None, return_cfg=False):
     cfg = config_dict_from_yaml(cfg_filename,
                                 output_dir=output_dir,
                                 backend=backend)
-    return compile_sequence_dict(**cfg)
+    sequence = compile_sequence_dict(**cfg)
+    if return_cfg:
+        return sequence, cfg
+    return sequence

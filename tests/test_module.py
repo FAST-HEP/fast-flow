@@ -105,3 +105,13 @@ def test_compile_sequence_yaml_import(config_2, tmpdir):
     assert stages[2].an_int == 100
     assert stages[2].a_str == "wooorrrddd"
     assert len(stages[2].other_args) == 1
+
+
+def test_read_return_cfg(config_2, tmpdir):
+    stages, cfg = fast_flow.read_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test", return_cfg=True)
+    assert len(stages) == 3
+    assert len(cfg) == 5
+    assert "stages" in cfg
+    assert "my_first_stage" in cfg
+    assert "my_second_stage" in cfg
+    assert "my_third_stage" in cfg
