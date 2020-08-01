@@ -4,6 +4,7 @@ import pytest
 import fast_flow.v1 as fast_flow
 from . import fake_scribbler_to_test as fakes
 
+
 @pytest.fixture
 def config_1(tmpdir):
     content = """
