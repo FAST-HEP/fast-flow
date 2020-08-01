@@ -1,8 +1,8 @@
 from __future__ import absolute_import
+from collections import defaultdict
 import pytest
 import fast_flow.v1 as fast_flow
 from . import fake_scribbler_to_test as fakes
-
 
 @pytest.fixture
 def config_1(tmpdir):
@@ -72,6 +72,25 @@ def config_2(config_1, tmpdir):
     return config_5
 
 
+@pytest.fixture
+def config_3(config_1, tmpdir):
+    subdir = tmpdir / "subdir"
+    subdir.mkdir()
+    subsubdir = subdir / "subsubdir"
+    subsubdir.mkdir()
+
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/config_1.yml"
+        - my_second_stage: FakeScribbler
+
+    my_second_stage: {}
+    """
+    config_3 = tmpdir / "config_3.yml"
+    config_3.write(content)
+    return config_3
+
+
 def test_read_sequence_yaml(config_1):
     stages = fast_flow.read_sequence_yaml(str(config_1))
     assert len(stages) == 2
@@ -93,7 +112,7 @@ def test_compile_sequence_yaml(config_1):
     assert len(stages[1].other_args) == 2
 
 
-def test_compile_sequence_yaml_import(config_2, tmpdir):
+def test_compile_sequence_yaml_import(config_2):
     stages = fast_flow.compile_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test")
     stages = stages()
     assert len(stages) == 3
@@ -107,11 +126,23 @@ def test_compile_sequence_yaml_import(config_2, tmpdir):
     assert len(stages[2].other_args) == 1
 
 
-def test_read_return_cfg(config_2, tmpdir):
+def test_read_return_cfg(config_2):
     stages, cfg = fast_flow.read_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test", return_cfg=True)
     assert len(stages) == 3
     assert len(cfg) == 5
     assert "stages" in cfg
-    assert "my_first_stage" in cfg
-    assert "my_second_stage" in cfg
-    assert "my_third_stage" in cfg
+    stage_names = {s.split("::")[-1] for s in cfg.keys()}
+    assert "my_first_stage" in stage_names
+    assert "my_second_stage" in stage_names
+    assert "my_third_stage" in stage_names
+
+
+def test_import_overwrite(config_3):
+    stages, cfg = fast_flow.read_sequence_yaml(str(config_3), backend="tests.fake_scribbler_to_test", return_cfg=True)
+    assert len(stages) == 3
+    counts = defaultdict(int)
+    for stage in cfg.keys():
+        counts[stage.split("::")[-1]] += 1
+    assert counts["my_first_stage"] == 1
+    assert counts["my_second_stage"] == 2
+    assert "my_third_stage" not in counts
