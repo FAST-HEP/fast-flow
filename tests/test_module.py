@@ -1,5 +1,4 @@
 from __future__ import absolute_import
-from collections import defaultdict
 import pytest
 import fast_flow.v1 as fast_flow
 from . import fake_scribbler_to_test as fakes
@@ -39,6 +38,7 @@ def config_2(config_1, tmpdir):
     stages:
         - IMPORT: "{this_dir}/config_1.yml"
         - my_third_stage: FakeScribblerArgs
+        - IMPORT: "{this_dir}/config_1.yml"
 
     my_third_stage:
         an_int: 100
@@ -116,7 +116,7 @@ def test_compile_sequence_yaml(config_1):
 def test_compile_sequence_yaml_import(config_2):
     stages = fast_flow.compile_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test")
     stages = stages()
-    assert len(stages) == 3
+    assert len(stages) == 5
     assert isinstance(stages[0], fakes.FakeScribbler)
     assert isinstance(stages[1], fakes.FakeScribblerArgs)
     assert stages[1].an_int == 3
@@ -129,21 +129,20 @@ def test_compile_sequence_yaml_import(config_2):
 
 def test_read_return_cfg(config_2):
     stages, cfg = fast_flow.read_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test", return_cfg=True)
-    assert len(stages) == 3
-    assert len(cfg) == 5
+    assert len(stages) == 5
+    assert len(cfg) == 7
     assert "stages" in cfg
-    stage_names = {s.split("::")[-1] for s in cfg.keys()}
-    assert "my_first_stage" in stage_names
-    assert "my_second_stage" in stage_names
-    assert "my_third_stage" in stage_names
+    assert "my_first_stage.0" in cfg
+    assert "my_first_stage.1" in cfg
+    assert "my_second_stage.0" in cfg
+    assert "my_second_stage.1" in cfg
+    assert "my_third_stage" in cfg
 
 
 def test_import_overwrite(config_3):
     stages, cfg = fast_flow.read_sequence_yaml(str(config_3), backend="tests.fake_scribbler_to_test", return_cfg=True)
     assert len(stages) == 3
-    counts = defaultdict(int)
-    for stage in cfg.keys():
-        counts[stage.split("::")[-1]] += 1
-    assert counts["my_first_stage"] == 1
-    assert counts["my_second_stage"] == 2
-    assert "my_third_stage" not in counts
+    assert "my_first_stage" in cfg
+    assert "my_second_stage.0" in cfg
+    assert "my_second_stage.1" in cfg
+    assert "my_third_stage" not in cfg
