@@ -22,9 +22,74 @@ def config_1(tmpdir):
         some_other_arg: True
         yet_more_arg: [0, 1, 2]
     """ % dict(tmpdir=str(tmpdir))
-    out_file = tmpdir / "config.yml"
+    out_file = tmpdir / "config_1.yml"
     out_file.write(content)
     return out_file
+
+
+@pytest.fixture
+def config_2(config_1, tmpdir):
+    subdir = tmpdir / "subdir"
+    subdir.mkdir()
+    subsubdir = subdir / "subsubdir"
+    subsubdir.mkdir()
+
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/config_1.yml"
+        - my_third_stage: FakeScribblerArgs
+        - IMPORT: "{this_dir}/config_1.yml"
+
+    my_third_stage:
+        an_int: 100
+        a_str: wooorrrddd
+        yet_more_arg:
+            one: 1
+            two: "222"
+    """
+    config_2 = tmpdir / "config_2.yml"
+    config_2.write(content)
+
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/../config_2.yml"
+    """
+    config_3 = subdir / "config_3.yml"
+    config_3.write(content)
+
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/subdir/config_3.yml"
+    """
+    config_4 = tmpdir / "config_4.yml"
+    config_4.write(content)
+
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/../../config_4.yml"
+    """
+    config_5 = subsubdir / "config_5.yml"
+    config_5.write(content)
+    return config_5
+
+
+@pytest.fixture
+def config_3(config_1, tmpdir):
+    subdir = tmpdir / "subdir"
+    subdir.mkdir()
+    subsubdir = subdir / "subsubdir"
+    subsubdir.mkdir()
+
+    content = """
+    stages:
+        - IMPORT: "{this_dir}/config_1.yml"
+        - my_second_stage: FakeScribbler
+
+    my_second_stage: {}
+    """
+    config_3 = tmpdir / "config_3.yml"
+    config_3.write(content)
+    return config_3
 
 
 def test_read_sequence_yaml(config_1):
@@ -46,3 +111,38 @@ def test_compile_sequence_yaml(config_1):
     assert stages[1].an_int == 3
     assert stages[1].a_str == "hello world"
     assert len(stages[1].other_args) == 2
+
+
+def test_compile_sequence_yaml_import(config_2):
+    stages = fast_flow.compile_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test")
+    stages = stages()
+    assert len(stages) == 5
+    assert isinstance(stages[0], fakes.FakeScribbler)
+    assert isinstance(stages[1], fakes.FakeScribblerArgs)
+    assert stages[1].an_int == 3
+    assert stages[1].a_str == "hello world"
+    assert isinstance(stages[2], fakes.FakeScribblerArgs)
+    assert stages[2].an_int == 100
+    assert stages[2].a_str == "wooorrrddd"
+    assert len(stages[2].other_args) == 1
+
+
+def test_read_return_cfg(config_2):
+    stages, cfg = fast_flow.read_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test", return_cfg=True)
+    assert len(stages) == 5
+    assert len(cfg) == 7
+    assert "stages" in cfg
+    assert "my_first_stage.0" in cfg
+    assert "my_first_stage.1" in cfg
+    assert "my_second_stage.0" in cfg
+    assert "my_second_stage.1" in cfg
+    assert "my_third_stage" in cfg
+
+
+def test_import_overwrite(config_3):
+    stages, cfg = fast_flow.read_sequence_yaml(str(config_3), backend="tests.fake_scribbler_to_test", return_cfg=True)
+    assert len(stages) == 3
+    assert "my_first_stage" in cfg
+    assert "my_second_stage.0" in cfg
+    assert "my_second_stage.1" in cfg
+    assert "my_third_stage" not in cfg

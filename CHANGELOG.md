@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+## [0.6.0] - 2020-08-01
+### Added
+- Option to return the expanded config (strip out imports) PR #15 [@benkrikler](https://github.com/benkrikler)
 
 ## [0.5.0] - 2020-07-25
 ### Added

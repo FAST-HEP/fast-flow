@@ -6,7 +6,6 @@ import six
 import importlib
 import copy
 from .config_exceptions import BadConfig
-from .yaml_config import config_dict_from_yaml
 logger = logging.getLogger(__name__)
 
 
@@ -61,29 +60,12 @@ def _create_stages(stages, output_dir, stage_descriptions,
     out_stages = []
     for i, stage_cfg in enumerate(stages):
         name, stage_type = infer_stage_name_class(i, stage_cfg)
-        if name == "IMPORT":
-            out_stages += import_yaml(stage_type, output_dir, this_dir,
-                                      return_future=return_future,
-                                      default_module=default_module)
-            continue
-
         out_stages += instantiate_stage(name, stage_type, output_dir,
                                         stage_descriptions=stage_descriptions,
                                         default_module=default_module,
                                         return_future=return_future,
                                         )
     return out_stages
-
-
-def import_yaml(filepath, output_dir, this_dir,
-                return_future=False, default_module=None):
-    filepath = filepath.format(this_dir=this_dir)
-    cfg = config_dict_from_yaml(filepath, output_dir=output_dir, backend=default_module)
-    stages = cfg.pop("stages")
-    general = cfg.pop("general", {})
-    return read_sequence_dict_internal(stages, general,
-                                       stage_descriptions=cfg,
-                                       return_future=return_future)
 
 
 def instantiate_stage(name, stage_type, output_dir, stage_descriptions,
