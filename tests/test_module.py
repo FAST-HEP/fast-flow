@@ -114,7 +114,7 @@ def test_compile_sequence_yaml(config_1):
 
 
 def test_compile_sequence_yaml_import(config_2):
-    stages = fast_flow.compile_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test")
+    stages = fast_flow.compile_sequence_yaml(str(config_2), backend=fakes)
     stages = stages()
     assert len(stages) == 5
     assert isinstance(stages[0], fakes.FakeScribbler)
@@ -128,7 +128,7 @@ def test_compile_sequence_yaml_import(config_2):
 
 
 def test_read_return_cfg(config_2):
-    stages, cfg = fast_flow.read_sequence_yaml(str(config_2), backend="tests.fake_scribbler_to_test", return_cfg=True)
+    stages, cfg = fast_flow.read_sequence_yaml(str(config_2), backend=fakes, return_cfg=True)
     assert len(stages) == 5
     assert len(cfg) == 7
     assert "stages" in cfg
