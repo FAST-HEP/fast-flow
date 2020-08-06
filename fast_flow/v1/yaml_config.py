@@ -14,6 +14,9 @@ def _load_yaml(filename):
 def config_dict_from_yaml(cfg_filename, output_dir=None, backend=None):
     cfg = _load_yaml(cfg_filename)
 
+    this_dir = os.path.dirname(cfg_filename)
+    cfg = expand_imports(cfg, this_dir=this_dir)
+
     # Override the output_dir in the config file if this function is given one
     if "general" not in cfg:
         cfg["general"] = {}
@@ -21,9 +24,6 @@ def config_dict_from_yaml(cfg_filename, output_dir=None, backend=None):
         cfg["general"]["output_dir"] = output_dir
     if backend:
         cfg["general"]["backend"] = backend
-
-    this_dir = os.path.dirname(cfg_filename)
-    cfg = expand_imports(cfg, this_dir=this_dir)
 
     return cfg
 
@@ -34,11 +34,12 @@ _StageDescription = namedtuple("_StageDescription", "name type config")
 def expand_imports(cfg, this_dir):
     cfg = copy.deepcopy(cfg)
     stages = cfg.pop("stages")
-    general = cfg.pop("general")
+    general = cfg.pop("general", None)
 
     internal_stage_list = preprocess_imports(stages, cfg, this_dir)
     expanded_cfg = build_config(internal_stage_list)
-    expanded_cfg["general"] = general
+    if general is not None:
+        expanded_cfg["general"] = general
     return expanded_cfg
 
 
